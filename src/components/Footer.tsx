@@ -31,7 +31,7 @@ export default function Footer() {
   return (
     <footer
       ref={footerRef}
-      className="relative bg-[#050505] border-t border-white/5"
+      className="relative bg-[#0a0a0a] border-t border-white/5"
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-10 py-16 sm:py-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">

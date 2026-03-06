@@ -87,7 +87,7 @@ export default function ScrollContent() {
       {/* Section 1: About */}
       <section
         id="about"
-        className="min-h-screen flex items-center justify-center px-6 py-24 bg-[#0a0a0a] relative"
+        className="min-h-screen flex items-center justify-center px-6 py-24 bg-[#121212] relative"
       >
         {/* Decorative side lines */}
         <div className="absolute left-6 sm:left-12 top-1/2 -translate-y-1/2 w-[1px] h-32 bg-gradient-to-b from-transparent via-orange-500/20 to-transparent" />
@@ -121,7 +121,7 @@ export default function ScrollContent() {
       {/* Section 2: Features Grid */}
       <section
         id="features"
-        className="min-h-screen flex items-center justify-center px-6 py-24 bg-[#070707] relative overflow-hidden"
+        className="min-h-screen flex items-center justify-center px-6 py-24 bg-[#0e0e0e] relative overflow-hidden"
       >
         {/* Background accent */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-orange-500/[0.02] blur-3xl pointer-events-none" />
@@ -169,7 +169,7 @@ export default function ScrollContent() {
       {/* Section 3: CTA */}
       <section
         id="contact"
-        className="min-h-[70vh] flex items-center justify-center px-6 py-24 bg-[#0a0a0a] relative"
+        className="min-h-[70vh] flex items-center justify-center px-6 py-24 bg-[#121212] relative"
       >
         <div className="section-fade text-center relative z-10">
           <span className="inline-block text-orange-500/60 text-xs tracking-[0.5em] uppercase mb-6 border border-orange-500/20 px-4 py-1.5 rounded-full">

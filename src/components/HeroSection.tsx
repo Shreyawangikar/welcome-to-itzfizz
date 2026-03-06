@@ -3,32 +3,140 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Headline from "./Headline";
-import Stats from "./Stats";
-import CarAnimation from "./CarAnimation";
-import Particles from "./Particles";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const BASE_PATH = process.env.NODE_ENV === "production" ? "/car-scroll-animation" : "";
+
+const LETTERS = "WELCOME ITZFIZZ".split("");
+
+interface StatBox {
+  id: string;
+  value: string;
+  text: string;
+  bg: string;
+  textColor: string;
+  position: string;
+  scrollStart: number;
+  scrollEnd: number;
+}
+
+const STAT_BOXES: StatBox[] = [
+  {
+    id: "box1",
+    value: "58%",
+    text: "Increase in pick up point use",
+    bg: "#def54f",
+    textColor: "#111",
+    position: "top-[5%] right-[30%]",
+    scrollStart: 400,
+    scrollEnd: 600,
+  },
+  {
+    id: "box2",
+    value: "23%",
+    text: "Decreased in customer phone calls",
+    bg: "#6ac9ff",
+    textColor: "#111",
+    position: "bottom-[5%] right-[35%]",
+    scrollStart: 600,
+    scrollEnd: 800,
+  },
+  {
+    id: "box3",
+    value: "27%",
+    text: "Increase in pick up point use",
+    bg: "#333",
+    textColor: "#fff",
+    position: "top-[5%] right-[10%]",
+    scrollStart: 800,
+    scrollEnd: 1000,
+  },
+  {
+    id: "box4",
+    value: "40%",
+    text: "Decreased in customer phone calls",
+    bg: "#fa7328",
+    textColor: "#111",
+    position: "bottom-[5%] right-[12.5%]",
+    scrollStart: 1000,
+    scrollEnd: 1200,
+  },
+];
+
 export default function HeroSection() {
-  const heroRef = useRef<HTMLDivElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const carRef = useRef<HTMLImageElement>(null);
+  const trailRef = useRef<HTMLDivElement>(null);
+  const roadRef = useRef<HTMLDivElement>(null);
+  const valueTextRef = useRef<HTMLDivElement>(null);
+  const boxRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
-    if (!heroRef.current || !overlayRef.current) return;
+    if (
+      !sectionRef.current ||
+      !carRef.current ||
+      !trailRef.current ||
+      !roadRef.current ||
+      !valueTextRef.current
+    )
+      return;
 
-    // Fade out hero content as user scrolls
-    gsap.to(overlayRef.current, {
-      opacity: 0,
-      y: -120,
-      scale: 0.95,
-      ease: "none",
+    const car = carRef.current;
+    const trail = trailRef.current;
+    const letters = gsap.utils.toArray<HTMLSpanElement>(".value-letter");
+    const valueAdd = valueTextRef.current;
+
+    const valueRect = valueAdd.getBoundingClientRect();
+    const letterOffsets = letters.map((letter) => letter.offsetLeft);
+
+    const roadWidth = window.innerWidth;
+    const carWidth = 150;
+    const endX = roadWidth - carWidth;
+
+    // Main car scroll animation
+    gsap.to(car, {
       scrollTrigger: {
-        trigger: heroRef.current,
+        trigger: ".hero-section",
         start: "top top",
-        end: "60% top",
-        scrub: 1.5,
+        end: "bottom top",
+        scrub: true,
+        pin: ".hero-track",
       },
+      x: endX,
+      ease: "none",
+      onUpdate: function () {
+        const carX = (gsap.getProperty(car, "x") as number) + carWidth / 2;
+
+        // Reveal letters as car passes
+        letters.forEach((letter, i) => {
+          const letterX = valueRect.left + letterOffsets[i];
+          if (carX >= letterX) {
+            letter.style.opacity = "1";
+          } else {
+            letter.style.opacity = "0";
+          }
+        });
+
+        // Update trail width
+        gsap.set(trail, { width: carX });
+      },
+    });
+
+    // Stat boxes fade in at scroll milestones
+    STAT_BOXES.forEach((box, i) => {
+      const el = boxRefs.current[i];
+      if (!el) return;
+
+      gsap.to(el, {
+        scrollTrigger: {
+          trigger: ".hero-section",
+          start: `top+=${box.scrollStart} top`,
+          end: `top+=${box.scrollEnd} top`,
+          scrub: true,
+        },
+        opacity: 1,
+      });
     });
 
     return () => {
@@ -37,59 +145,81 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section
-      id="home"
-      ref={heroRef}
-      className="relative min-h-[250vh] bg-[#0a0a0a] overflow-hidden"
-    >
-      {/* Fixed hero viewport */}
-      <div className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden">
-        {/* Background grid pattern */}
-        <div className="absolute inset-0 opacity-[0.015]">
+    <div ref={sectionRef} className="hero-section relative" style={{ height: "200vh" }}>
+      <div className="hero-track sticky top-0 h-screen w-full flex items-center justify-center bg-[#121212]">
+        {/* Road */}
+        <div
+          ref={roadRef}
+          className="relative w-screen overflow-hidden"
+          style={{ height: "200px", backgroundColor: "#1e1e1e" }}
+        >
+          {/* Car image */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            ref={carRef}
+            src={`${BASE_PATH}/car.png`}
+            alt="car"
+            className="absolute top-0 left-0 z-10"
+            style={{ height: "200px" }}
+          />
+
+          {/* Green trail */}
           <div
-            className="w-full h-full"
+            ref={trailRef}
+            className="absolute top-0 left-0 z-[1]"
             style={{
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-              backgroundSize: "60px 60px",
+              height: "200px",
+              background: "#45db7d",
+              width: 0,
             }}
           />
-        </div>
 
-        {/* Corner accents */}
-        <div className="absolute top-10 left-10 w-16 h-16 border-l border-t border-white/[0.06]" />
-        <div className="absolute top-10 right-10 w-16 h-16 border-r border-t border-white/[0.06]" />
-        <div className="absolute bottom-10 left-10 w-16 h-16 border-l border-b border-white/[0.06]" />
-        <div className="absolute bottom-10 right-10 w-16 h-16 border-r border-b border-white/[0.06]" />
-
-        {/* Particles */}
-        <Particles />
-
-        {/* Ambient gradient */}
-        <div className="gradient-overlay absolute inset-0" />
-
-        {/* Car animation layer */}
-        <CarAnimation />
-
-        {/* Content overlay */}
-        <div
-          ref={overlayRef}
-          className="relative z-20 flex flex-col items-center justify-center w-full"
-        >
-          <Headline />
-          <Stats />
-        </div>
-
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3">
-          <span className="text-white/20 text-[10px] tracking-[0.5em] uppercase font-light">
-            Scroll to explore
-          </span>
-          <div className="relative w-5 h-8 rounded-full border border-white/15 flex items-start justify-center p-1">
-            <div className="w-1 h-1.5 rounded-full bg-orange-500/60 animate-bounce" />
+          {/* WELCOME ITZFIZZ letters on road */}
+          <div
+            ref={valueTextRef}
+            className="absolute z-[5] flex"
+            style={{
+              top: "30%",
+              left: "5%",
+              fontSize: "8rem",
+              fontWeight: "bold",
+              gap: "0.3rem",
+            }}
+          >
+            {LETTERS.map((char, i) => (
+              <span
+                key={i}
+                className="value-letter"
+                style={{ color: "#111", opacity: 0, transition: "opacity 0.1s" }}
+              >
+                {char === " " ? "\u00A0" : char}
+              </span>
+            ))}
           </div>
         </div>
+
+        {/* Stat boxes */}
+        {STAT_BOXES.map((box, i) => (
+          <div
+            key={box.id}
+            ref={(el) => { boxRefs.current[i] = el; }}
+            className={`absolute z-[5] flex flex-col justify-center items-start gap-[5px] rounded-[10px] m-4 ${box.position}`}
+            style={{
+              opacity: 0,
+              background: box.bg,
+              color: box.textColor,
+              padding: "30px",
+              fontSize: "18px",
+              transition: "opacity 0.5s",
+            }}
+          >
+            <span className="text-[58px] font-semibold leading-none">
+              {box.value}
+            </span>
+            {box.text}
+          </div>
+        ))}
       </div>
-    </section>
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0a;
+  --background: #121212;
   --foreground: #ededed;
 }
 
@@ -26,7 +26,7 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -56,40 +56,16 @@ body {
   background: linear-gradient(to bottom, #555, #333);
 }
 
-/* Headline letter spacing */
-.headline-letter {
-  display: inline-block;
+/* Value letters on road */
+.value-letter {
+  color: #111;
   opacity: 0;
-  transform: translateY(40px) rotateX(-90deg);
-}
-
-/* Stats card */
-.stat-card {
-  opacity: 0;
-  transform: translateY(50px) scale(0.9);
-}
-
-/* Car image */
-.car-image {
-  will-change: transform;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  transform-style: preserve-3d;
-}
-
-/* Gradient overlay for depth */
-.gradient-overlay {
-  background: radial-gradient(
-    ellipse at center,
-    rgba(255, 100, 0, 0.04) 0%,
-    transparent 60%
-  );
 }
 
 /* Section transitions */
 .section-fade {
   opacity: 0;
-  transform: translateY(80px);
+  transform: translateY(60px);
 }
 
 /* Smooth focus outlines */
