@@ -60,9 +60,26 @@ export default function HeroSection() {
   const ribbonRef = useRef<HTMLDivElement>(null);
   const flashRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
+  const scrollHintRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!sectionRef.current || !trackRef.current) return;
+
+    /* ── Scroll hint entrance + fade on scroll ── */
+    if (scrollHintRef.current) {
+      gsap.fromTo(scrollHintRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 1.2, ease: "power2.out", delay: 3.2 }
+      );
+
+      const handleScroll = () => {
+        if (window.scrollY > 30 && scrollHintRef.current) {
+          gsap.to(scrollHintRef.current, { opacity: 0, y: -15, duration: 0.5, ease: "power2.in" });
+          window.removeEventListener("scroll", handleScroll);
+        }
+      };
+      window.addEventListener("scroll", handleScroll, { passive: true });
+    }
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
@@ -428,6 +445,31 @@ export default function HeroSection() {
             background: "linear-gradient(0deg, rgba(212,175,55,0.06) 0%, transparent 100%)",
           }}
         />
+
+        {/* ── Scroll instruction overlay ── */}
+        <div
+          ref={scrollHintRef}
+          className="absolute bottom-[3%] left-1/2 z-[35] flex flex-col items-center gap-2 pointer-events-none"
+          style={{ opacity: 0, transform: "translateX(-50%)" }}
+        >
+          <span
+            className="text-[#e8d5a3]/70 text-[11px] tracking-[0.4em] uppercase font-light"
+            style={{ textShadow: "0 0 12px rgba(212,175,55,0.3)" }}
+          >
+            Scroll to unveil
+          </span>
+          {/* Animated chevron */}
+          <div className="scroll-hint-bounce" style={{ position: "relative", left: "50%", transform: "translateX(-50%)" }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M7 10l5 5 5-5" />
+            </svg>
+          </div>
+          {/* Thin golden line */}
+          <div
+            className="w-[1px] h-8 mt-1"
+            style={{ background: "linear-gradient(to bottom, rgba(255,215,0,0.5), transparent)" }}
+          />
+        </div>
       </div>
     </div>
   );
